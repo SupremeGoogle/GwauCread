@@ -35,11 +35,10 @@ export async function POST(request: NextRequest) {
     // Try Google Sheets in background (non-blocking)
     const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
     if (scriptUrl) {
-      const scriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
       fetch(scriptUrl, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action: "create", secret: scriptSecret, lead }),
+        body: JSON.stringify({ action: "create", lead }),
       }).catch(() => {});
     }
 

@@ -32,7 +32,6 @@ export async function GET(request: NextRequest) {
       setTimeout(() => controller.abort(), 4000);
       const url = new URL(scriptUrl);
       url.searchParams.set("action", "list");
-      url.searchParams.set("secret", process.env.GOOGLE_SCRIPT_SECRET || "");
       const response = await fetch(url.toString(), { signal: controller.signal });
       if (response.ok) {
         const data = await response.json();
