@@ -132,12 +132,12 @@ export default function AdminPage() {
       return [nextProduct, ...current];
     });
     resetForm();
-    setStatus("Товар подготовлен. Нажмите «Сохранить в GitHub».");
+    setStatus("Товар подготовлен. Нажмите «Сохранить».");
   }
 
   function removeProduct(id: string) {
     setProducts((current) => current.filter((product) => product.id !== id));
-    setStatus("Товар удалён из черновика. Нажмите «Сохранить в GitHub».");
+    setStatus("Товар удалён из черновика. Нажмите «Сохранить».");
   }
 
   async function uploadImage(file: File) {
@@ -300,7 +300,7 @@ export default function AdminPage() {
               <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 14 }}>
                 <h2 style={{ margin: 0, flex: 1 }}>Товары</h2>
                 <button className="button primary" disabled={saving} onClick={persistProducts} type="button" style={{ minHeight: 38, fontSize: 13 }}>
-                  <Save size={15} /> {saving ? "Сохраняем…" : "Сохранить в GitHub"}
+                  <Save size={15} /> {saving ? "Сохраняем…" : "Сохранить"}
                 </button>
               </div>
               <div className="admin-list">
