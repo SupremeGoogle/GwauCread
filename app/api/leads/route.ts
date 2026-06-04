@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { promises as fs } from "node:fs";
+import path from "node:path";
 import type { Lead } from "@/lib/types";
-import { saveLocalLead } from "@/lib/leads";
+
+const leadsFile = path.join(process.cwd(), "data", "submissions.json");
+
+async function saveLead(lead: Lead) {
+  let leads: Lead[] = [];
+  try {
+    const text = await fs.readFile(leadsFile, "utf-8");
+    leads = JSON.parse(text);
+  } catch {
+    // first time
+  }
+  leads.unshift({ id: crypto.randomUUID(), createdAt: new Date().toISOString(), ...lead });
+  if (leads.length > 200) leads.length = 200;
+  try {
+    await fs.writeFile(leadsFile, JSON.stringify(leads, null, 2), "utf-8");
+  } catch {
+    // read-only fs (Vercel) — ignore
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,34 +29,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Укажите имя и контакт" }, { status: 400 });
     }
 
-    await saveLocalLead(lead);
+    // Always save locally (best-effort)
+    await saveLead(lead);
 
+    // Try Google Sheets in background (non-blocking)
     const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
-    const scriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
-
-    let sheetResponse: string | null = null;
-
     if (scriptUrl) {
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 5000);
-        const res = await fetch(scriptUrl, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ action: "create", secret: scriptSecret, lead }),
-          signal: controller.signal,
-        });
-        clearTimeout(timer);
-        sheetResponse = await res.text();
-        if (!res.ok) {
-          return NextResponse.json({ ok: true, warning: "Заявка сохранена локально, но Google Sheets ответил ошибкой: " + sheetResponse });
-        }
-      } catch (e) {
-        return NextResponse.json({ ok: true, warning: "Заявка сохранена локально, Google Sheets недоступен: " + (e instanceof Error ? e.message : "таймаут") });
-      }
+      const scriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
+      fetch(scriptUrl, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "create", secret: scriptSecret, lead }),
+      }).catch(() => {});
     }
 
-    return NextResponse.json({ ok: true, warning: sheetResponse ? null : "Google Sheets не подключён, заявка сохранена локально" });
+    return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

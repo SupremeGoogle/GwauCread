@@ -1,10 +1,11 @@
 "use client";
 
 import { Send } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import type { Product } from "@/lib/types";
 
 export function LeadForm({ products }: { products: Product[] }) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -13,29 +14,34 @@ export function LeadForm({ products }: { products: Product[] }) {
     setPending(true);
     setStatus("");
 
-    const formEl = event.currentTarget;
-    const form = new FormData(formEl);
-    const body = Object.fromEntries(form.entries());
-    delete body.consent;
-    const response = await fetch("/api/leads", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body)
-    });
+    try {
+      const form = new FormData(event.currentTarget);
+      const body = Object.fromEntries(form.entries());
+      delete body.consent;
+
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        formRef.current?.reset();
+        setStatus(result.warning ? "✓ " + result.warning : "✓ Заявка отправлена!");
+      } else {
+        setStatus("✗ " + (result.error || "Ошибка сервера"));
+      }
+    } catch {
+      setStatus("✗ Ошибка соединения");
+    }
 
     setPending(false);
-    const result = await response.json().catch(() => ({}));
-    if (response.ok) {
-      formEl.reset();
-      const msg = result.warning ? result.warning : "Заявка отправлена. Мы скоро свяжемся с вами.";
-      setStatus(msg);
-    } else {
-      setStatus(result.error || "Не удалось отправить заявку.");
-    }
   }
 
   return (
-    <form className="form" onSubmit={submit}>
+    <form className="form" ref={formRef} onSubmit={submit}>
       <input className="input" name="name" placeholder="Имя" required />
       <input className="input" name="phone" placeholder="Телефон или Telegram" required />
       <select className="select" name="product" defaultValue="">
@@ -58,9 +64,9 @@ export function LeadForm({ products }: { products: Product[] }) {
       </label>
       <button className="button primary" type="submit" disabled={pending}>
         <Send size={18} />
-        {pending ? "Отправляем" : "Отправить заявку"}
+        {pending ? "Отправляем…" : "Отправить заявку"}
       </button>
-      <div className="status">{status}</div>
+      {status && <div className="status" style={{ marginTop: 8 }}>{status}</div>}
     </form>
   );
 }

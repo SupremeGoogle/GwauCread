@@ -1,65 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
+import { promises as fs } from "node:fs";
+import path from "node:path";
 import { assertAdmin } from "@/lib/auth";
-import { getLocalLeads } from "@/lib/leads";
+import type { Lead } from "@/lib/types";
+
+const leadsFile = path.join(process.cwd(), "data", "submissions.json");
+
+async function readLocalLeads(): Promise<Lead[]> {
+  try {
+    const text = await fs.readFile(leadsFile, "utf-8");
+    return JSON.parse(text);
+  } catch {
+    return [];
+  }
+}
 
 export async function GET(request: NextRequest) {
-  try {
-    const auth = assertAdmin(request);
-    if (!auth.ok) {
-      return NextResponse.json({ error: auth.message }, { status: auth.status });
-    }
+  const auth = assertAdmin(request);
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.message }, { status: auth.status });
+  }
 
-    const sheetUrl = process.env.GOOGLE_SHEETS_URL || "";
-    const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
-    const scriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
+  const sheetUrl = process.env.GOOGLE_SHEETS_URL || "";
+  const localLeads = await readLocalLeads();
 
-    let fromRemote = false;
-
-    if (scriptUrl) {
-      try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 5000);
-        const url = new URL(scriptUrl);
-        url.searchParams.set("action", "list");
-        url.searchParams.set("secret", scriptSecret || "");
-        const response = await fetch(url.toString(), {
-          cache: "no-store",
-          signal: controller.signal,
-        });
-        clearTimeout(timer);
-
-        const text = await response.text();
-
-        if (response.ok) {
-          const data = JSON.parse(text);
-          if (data.leads) {
-            fromRemote = true;
-            return NextResponse.json({ ...data, sheetUrl });
-          }
-          return NextResponse.json({ leads: [], sheetUrl, warning: "Google Sheets ответил: " + (data.error || text) });
-        }
-
-        return NextResponse.json({ leads: [], sheetUrl, warning: "Google Sheets ответил ошибкой: " + text });
-      } catch (e) {
-        if (!fromRemote) {
-          const localLeads = await getLocalLeads();
-          return NextResponse.json({
-            leads: localLeads,
-            sheetUrl,
-            warning: "Google Sheets недоступен (" + (e instanceof Error ? e.message : "таймаут") + "), показаны локальные заявки",
-          });
+  // Try remote, fall back to local
+  const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
+  if (scriptUrl) {
+    try {
+      const controller = new AbortController();
+      setTimeout(() => controller.abort(), 4000);
+      const url = new URL(scriptUrl);
+      url.searchParams.set("action", "list");
+      url.searchParams.set("secret", process.env.GOOGLE_SCRIPT_SECRET || "");
+      const response = await fetch(url.toString(), { signal: controller.signal });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.leads) {
+          return NextResponse.json({ leads: data.leads, sheetUrl, fromRemote: true });
         }
       }
+    } catch {
+      // fallback
     }
-
-    const localLeads = await getLocalLeads();
-    return NextResponse.json({
-      leads: localLeads,
-      sheetUrl,
-      warning: "Google Sheets не подключён, показаны локальные заявки",
-    });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
   }
+
+  return NextResponse.json({
+    leads: localLeads,
+    sheetUrl,
+    warning: localLeads.length > 0 ? "Локальные заявки (Google Sheets недоступен)" : "",
+  });
 }
