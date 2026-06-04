@@ -14,12 +14,16 @@ export async function getLocalLeads(): Promise<Lead[]> {
 }
 
 export async function saveLocalLead(lead: Lead): Promise<void> {
-  const leads = await getLocalLeads();
-  leads.unshift({
-    ...lead,
-    id: crypto.randomUUID(),
-    createdAt: new Date().toISOString(),
-  });
-  if (leads.length > 200) leads.length = 200;
-  await fs.writeFile(leadsPath, JSON.stringify(leads, null, 2), "utf-8");
+  try {
+    const leads = await getLocalLeads();
+    leads.unshift({
+      ...lead,
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+    });
+    if (leads.length > 200) leads.length = 200;
+    await fs.writeFile(leadsPath, JSON.stringify(leads, null, 2), "utf-8");
+  } catch {
+    // Vercel has read-only fs — local save is best-effort
+  }
 }
