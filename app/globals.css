@@ -12,6 +12,42 @@
   --coal: #0b1110;
 }
 
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -249,12 +285,20 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 180ms ease, border-color 180ms ease;
+  transition: border-color 180ms ease, box-shadow 400ms ease;
 }
 
 .product-card:hover {
   border-color: rgba(215, 144, 77, 0.65);
-  transform: translateY(-4px);
+  box-shadow: 0 8px 40px rgba(215, 144, 77, 0.12);
+}
+
+.product-card img {
+  transition: transform 600ms ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.06);
 }
 
 .product-media {

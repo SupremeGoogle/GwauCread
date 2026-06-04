@@ -1,16 +1,43 @@
-import Link from "next/link";
-import { ArrowRight, ShieldCheck, ShoppingBag, Sparkles, Star } from "lucide-react";
-import { LeadForm } from "@/components/LeadForm";
-import { getProducts } from "@/lib/products";
+"use client";
 
-export default async function HomePage() {
-  const products = await getProducts();
+import Link from "next/link";
+import { ArrowRight, ShieldCheck, ShoppingBag, Sparkles, Star, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
+import { LeadForm } from "@/components/LeadForm";
+import { FloatingParticles } from "@/components/FloatingParticles";
+import { CursorGlow } from "@/components/CursorGlow";
+import { TiltCard } from "@/components/TiltCard";
+import { ScrollReveal, StaggerReveal, StaggerItem } from "@/components/ScrollReveal";
+import { useEffect, useState } from "react";
+import type { Product } from "@/lib/types";
+
+function useProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
+  useEffect(() => {
+    fetch("/api/products", { cache: "no-store" })
+      .then((r) => r.json())
+      .then(setProducts);
+  }, []);
+  return products;
+}
+
+export default function HomePage() {
+  const products = useProducts();
 
   return (
-    <main className="shell">
+    <main style={{ position: "relative" }}>
+      <CursorGlow />
+      <FloatingParticles />
+
       <nav className="nav">
         <Link className="brand" href="/">
-          <span className="brand-mark">GC</span>
+          <motion.span
+            className="brand-mark"
+            animate={{ rotate: [0, 5, -5, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            GC
+          </motion.span>
           <span>GwauCread</span>
         </Link>
         <div className="nav-links">
@@ -18,97 +45,232 @@ export default async function HomePage() {
           <a href="#contact">Заявка</a>
           <Link href="/privacy">Политика</Link>
           <Link href="/admin">Админка</Link>
+          <Link
+            href="/original"
+            style={{
+              border: "1px solid var(--teal)",
+              color: "var(--teal)",
+              fontSize: 12,
+            }}
+          >
+            Оригинал
+          </Link>
         </div>
       </nav>
 
       <section className="hero" style={{ backgroundImage: "url('/gwaucread-hero.png')" }}>
-        <div className="hero-shade" />
+        <div
+          className="hero-shade"
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(9,12,12,0.92) 0%, rgba(9,12,12,0.6) 40%, rgba(9,12,12,0.2) 70%), linear-gradient(180deg, rgba(9,12,12,0.4), rgba(9,12,12,0.2) 50%, var(--paper))",
+          }}
+        />
         <div className="hero-copy">
-          <p className="eyebrow">Творческие наборы и коллекционные сборки</p>
-          <h1>GwauCread</h1>
-          <p className="lead">
+          <motion.p
+            className="eyebrow"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Творческие наборы и коллекционные сборки
+          </motion.p>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            Gwau
+            <motion.span
+              style={{ display: "inline-block", color: "var(--teal)" }}
+              animate={{ scale: [1, 1.04, 1] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            >
+              Cread
+            </motion.span>
+          </motion.h1>
+
+          <motion.p
+            className="lead"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
             Предметы для спокойной сборки, ярких подарков и полок, которые хочется рассматривать.
-          </p>
-          <div className="hero-actions">
-            <a className="button primary" href="#catalog">
+          </motion.p>
+
+          <motion.div
+            className="hero-actions"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+          >
+            <motion.a
+              className="button primary"
+              href="#catalog"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+            >
               Смотреть товары <ArrowRight size={18} />
-            </a>
-            <a className="button secondary" href="#contact">
+            </motion.a>
+            <motion.a
+              className="button secondary"
+              href="#contact"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+            >
               Оставить заявку
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
         </div>
-        <div className="hero-panel">
+
+        <motion.div
+          className="hero-panel"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 1 }}
+        >
           <span>6 товаров</span>
           <strong>Конструкторы, рукоделие, коллекционный вайб</strong>
-        </div>
+        </motion.div>
+
+        <motion.div
+          style={{
+            position: "absolute",
+            bottom: 30,
+            left: "50%",
+            marginLeft: -12,
+            zIndex: 2,
+          }}
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <ChevronDown size={24} style={{ color: "var(--muted)" }} />
+        </motion.div>
       </section>
 
-      <section className="section" id="catalog">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Каталог</p>
-            <h2>Товары GwauCread</h2>
+      <ScrollReveal>
+        <section className="section" id="catalog">
+          <div className="section-head">
+            <div>
+              <p className="eyebrow">Каталог</p>
+              <h2>Товары GwauCread</h2>
+            </div>
+            <p className="muted">Ассортимент можно менять через админ-панель.</p>
           </div>
-          <p className="muted">Ассортимент можно менять через админ-панель.</p>
-        </div>
 
-        <div className="products">
-          {products.map((product) => (
-            <article className="product-card" key={product.id}>
-              <div className="product-media">
-                {product.badge ? <span className="badge">{product.badge}</span> : null}
-                <img src={product.image} width={516} height={688} alt={product.name} />
-              </div>
-              <div className="product-body">
-                <div className="price-row">
-                  <span className="price">{product.price}</span>
-                  {product.oldPrice ? <span className="old-price">{product.oldPrice}</span> : null}
-                </div>
-                <h3>{product.name}</h3>
-                <p>{product.description}</p>
-                <div className="meta">
-                  <Star size={16} fill="currentColor" />
-                  <span>{product.rating || "Новый товар"}</span>
-                  <span>{product.reviews}</span>
-                </div>
-                <div className="product-actions">
-                  <a className="buy-button" href={product.buyUrl || "#contact"} target={product.buyUrl ? "_blank" : undefined} rel="noreferrer">
-                    <ShoppingBag size={18} />
-                    Купить
-                  </a>
-                  <a className="details-link" href="#contact">
-                    Задать вопрос
-                  </a>
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+          <StaggerReveal className="products">
+            {products.map((product) => (
+              <StaggerItem key={product.id}>
+                <TiltCard>
+                  <div className="product-media">
+                    {product.badge ? (
+                      <motion.span
+                        className="badge"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.3 }}
+                      >
+                        {product.badge}
+                      </motion.span>
+                    ) : null}
+                    <img src={product.image} width={516} height={688} alt={product.name} />
+                    <motion.div
+                      className="product-shine"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background:
+                          "linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%)",
+                        opacity: 0,
+                      }}
+                      whileHover={{ opacity: 1, x: ["-100%", "100%"] }}
+                      transition={{ duration: 0.8 }}
+                    />
+                  </div>
+                  <div className="product-body">
+                    <div className="price-row">
+                      <span className="price">{product.price}</span>
+                      {product.oldPrice ? <span className="old-price">{product.oldPrice}</span> : null}
+                    </div>
+                    <h3>{product.name}</h3>
+                    <p>{product.description}</p>
+                    <div className="meta">
+                      <Star size={16} fill="currentColor" />
+                      <span>{product.rating || "Новый товар"}</span>
+                      <span>{product.reviews}</span>
+                    </div>
+                    <div className="product-actions">
+                      <motion.a
+                        className="buy-button"
+                        href={product.buyUrl || "#contact"}
+                        target={product.buyUrl ? "_blank" : undefined}
+                        rel="noreferrer"
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                      >
+                        <ShoppingBag size={18} />
+                        Купить
+                      </motion.a>
+                      <a className="details-link" href="#contact">
+                        Задать вопрос
+                      </a>
+                    </div>
+                  </div>
+                </TiltCard>
+              </StaggerItem>
+            ))}
+          </StaggerReveal>
+        </section>
+      </ScrollReveal>
 
-      <section className="contact-band" id="contact">
+      <motion.section
+        className="contact-band"
+        id="contact"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="contact-grid">
-          <div>
-            <p className="eyebrow">Связаться</p>
-            <h2>Оставьте заявку</h2>
-            <p>
-              Форма пока простая: имя, контакт, товар и комментарий. После подключения Google Sheets заявки появятся в админке.
-            </p>
-            <p style={{ marginTop: 18 }}>
-              <ShieldCheck size={18} /> Данные используются только для связи по заявке.
-            </p>
-          </div>
-          <LeadForm products={products} />
+          <ScrollReveal direction="left">
+            <div>
+              <p className="eyebrow">Связаться</p>
+              <h2>Оставьте заявку</h2>
+              <p>
+                Форма пока простая: имя, контакт, товар и комментарий. После подключения Google Sheets заявки
+                появятся в админке.
+              </p>
+              <motion.p
+                style={{ marginTop: 18 }}
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <ShieldCheck size={18} /> Данные используются только для связи по заявке.
+              </motion.p>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal direction="right" delay={0.2}>
+            <LeadForm products={products} />
+          </ScrollReveal>
         </div>
-      </section>
+      </motion.section>
 
-      <footer className="footer">
+      <motion.footer
+        className="footer"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+      >
         <span>© {new Date().getFullYear()} GwauCread</span>
-        <span>
+        <motion.span
+          animate={{ opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
           <Sparkles size={16} /> Современный каталог для Vercel
-        </span>
-      </footer>
+        </motion.span>
+      </motion.footer>
     </main>
   );
 }
