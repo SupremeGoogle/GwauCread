@@ -8,15 +8,13 @@ export async function GET(request: NextRequest) {
   }
 
   const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
-  const secret = process.env.GOOGLE_SCRIPT_SECRET;
 
-  if (!scriptUrl || !secret) {
+  if (!scriptUrl) {
     return NextResponse.json({ leads: [], warning: "Google Sheets пока не подключен" });
   }
 
   const url = new URL(scriptUrl);
   url.searchParams.set("action", "list");
-  url.searchParams.set("secret", secret);
 
   const response = await fetch(url.toString(), { cache: "no-store" });
   if (!response.ok) {

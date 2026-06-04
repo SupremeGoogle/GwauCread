@@ -3,9 +3,8 @@ import type { Lead } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
   const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
-  const secret = process.env.GOOGLE_SCRIPT_SECRET;
 
-  if (!scriptUrl || !secret) {
+  if (!scriptUrl) {
     return NextResponse.json({ error: "Google Sheets пока не подключен" }, { status: 503 });
   }
 
@@ -17,7 +16,7 @@ export async function POST(request: NextRequest) {
   const response = await fetch(scriptUrl, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ action: "create", secret, lead })
+    body: JSON.stringify({ action: "create", lead })
   });
 
   if (!response.ok) {

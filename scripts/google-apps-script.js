@@ -1,4 +1,3 @@
-const SCRIPT_SECRET = "change-this-secret";
 const SHEET_NAME = "Заявки";
 
 function sheet() {
@@ -23,10 +22,6 @@ function json(data) {
 
 function doGet(event) {
   const params = event.parameter || {};
-  if (params.secret !== SCRIPT_SECRET) {
-    return json({ error: "Unauthorized" });
-  }
-
   if (params.action !== "list") {
     return json({ error: "Unknown action" });
   }
@@ -46,10 +41,6 @@ function doGet(event) {
 
 function doPost(event) {
   const payload = JSON.parse(event.postData.contents || "{}");
-  if (payload.secret !== SCRIPT_SECRET) {
-    return json({ error: "Unauthorized" });
-  }
-
   if (payload.action !== "create") {
     return json({ error: "Unknown action" });
   }
