@@ -7,7 +7,7 @@
   "heroPanel": "Конструкторы, рукоделие, коллекционный вайб",
   "catalogEyebrow": "Каталог",
   "catalogTitle": "Товары GwauCread",
-  "catalogDesc": "Ассортимент можно менять через админ-панель.",
+  "catalogDesc": "",
   "contactEyebrow": "Связаться",
   "contactTitle": "Оставьте заявку",
   "contactDesc": "Форма пока простая: имя, контакт, товар и комментарий. Заявки сохраняются в Google Sheets и появляются в админке.",
