@@ -209,8 +209,7 @@ export default function AdminPage() {
         <div className="admin-shell" style={{ maxWidth: 460 }}>
           <form className="panel form" onSubmit={login}>
             <Link className="brand" href="/">
-              <span className="brand-mark">GC</span>
-              <span>GwauCread</span>
+              <span style={{ fontWeight: 900, fontSize: 22 }}>GwauCread</span>
             </Link>
             <h2>Вход в админку</h2>
             <input
@@ -235,8 +234,8 @@ export default function AdminPage() {
       <div className="admin-shell">
         <header className="admin-header">
           <Link className="brand" href="/">
-            <span className="brand-mark">GC</span>
-            <span>GwauCread Admin</span>
+            <span style={{ fontWeight: 900, fontSize: 22 }}>GwauCread</span>
+            <span style={{ fontSize: 14, color: "var(--muted)", marginLeft: 6 }}>Admin</span>
           </Link>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <button
