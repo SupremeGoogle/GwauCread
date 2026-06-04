@@ -13,7 +13,8 @@ export function LeadForm({ products }: { products: Product[] }) {
     setPending(true);
     setStatus("");
 
-    const form = new FormData(event.currentTarget);
+    const formEl = event.currentTarget;
+    const form = new FormData(formEl);
     const body = Object.fromEntries(form.entries());
     delete body.consent;
     const response = await fetch("/api/leads", {
@@ -25,7 +26,7 @@ export function LeadForm({ products }: { products: Product[] }) {
     setPending(false);
     const result = await response.json().catch(() => ({}));
     if (response.ok) {
-      event.currentTarget.reset();
+      formEl.reset();
       const msg = result.warning ? result.warning : "Заявка отправлена. Мы скоро свяжемся с вами.";
       setStatus(msg);
     } else {
