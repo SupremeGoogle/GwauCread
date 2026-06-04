@@ -12,23 +12,31 @@ export async function POST(request: NextRequest) {
     await saveLocalLead(lead);
 
     const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
+    const scriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
+
+    let sheetResponse: string | null = null;
+
     if (scriptUrl) {
       try {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 5000);
-        await fetch(scriptUrl, {
+        const res = await fetch(scriptUrl, {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ action: "create", lead }),
+          body: JSON.stringify({ action: "create", secret: scriptSecret, lead }),
           signal: controller.signal,
         });
         clearTimeout(timer);
-      } catch {
-        // Google Sheets is optional
+        sheetResponse = await res.text();
+        if (!res.ok) {
+          return NextResponse.json({ ok: true, warning: "Заявка сохранена локально, но Google Sheets ответил ошибкой: " + sheetResponse });
+        }
+      } catch (e) {
+        return NextResponse.json({ ok: true, warning: "Заявка сохранена локально, Google Sheets недоступен: " + (e instanceof Error ? e.message : "таймаут") });
       }
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, warning: sheetResponse ? null : "Google Sheets не подключён, заявка сохранена локально" });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

@@ -14,19 +14,22 @@ export function LeadForm({ products }: { products: Product[] }) {
     setStatus("");
 
     const form = new FormData(event.currentTarget);
+    const body = Object.fromEntries(form.entries());
+    delete body.consent;
     const response = await fetch("/api/leads", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(Object.fromEntries(form.entries()))
+      body: JSON.stringify(body)
     });
 
     setPending(false);
+    const result = await response.json().catch(() => ({}));
     if (response.ok) {
       event.currentTarget.reset();
-      setStatus("Заявка отправлена. Мы скоро свяжемся с вами.");
+      const msg = result.warning ? result.warning : "Заявка отправлена. Мы скоро свяжемся с вами.";
+      setStatus(msg);
     } else {
-      const data = await response.json().catch(() => ({}));
-      setStatus(data.error || "Не удалось отправить заявку.");
+      setStatus(result.error || "Не удалось отправить заявку.");
     }
   }
 
