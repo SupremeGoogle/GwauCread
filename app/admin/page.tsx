@@ -148,7 +148,7 @@ export default function AdminPage() {
   async function uploadImage(file: File) {
     const form = new FormData();
     form.set("file", file);
-    setStatus("Загружаем картинку в GitHub");
+    setStatus("Загружаем картинку");
     const response = await fetch("/api/admin/upload", {
       method: "POST",
       headers: authHeaders,
@@ -165,7 +165,7 @@ export default function AdminPage() {
 
   async function persistProducts() {
     setSaving(true);
-    setStatus("Сохраняем товары в GitHub");
+    setStatus("Сохраняем товары");
     const response = await fetch("/api/admin/products", {
       method: "POST",
       headers: { ...authHeaders, "content-type": "application/json" },
@@ -175,7 +175,7 @@ export default function AdminPage() {
     setSaving(false);
 
     if (response.ok) {
-      setStatus(`Сохранено в GitHub. Commit: ${String(data.sha).slice(0, 7)}`);
+      setStatus("Сохранено");
     } else {
       setStatus(data.error || "Не удалось сохранить товары");
     }
@@ -364,7 +364,7 @@ export default function AdminPage() {
             <section className="panel">
               <h2>Редактор контента</h2>
               <p className="muted" style={{ marginBottom: 16 }}>
-                Текст на главной странице сайта. Изменения применяются сразу (локально) или после коммита в GitHub.
+                Текст на главной странице сайта. Изменения сохраняются.
               </p>
               <form
                 className="form"
@@ -422,7 +422,7 @@ export default function AdminPage() {
             </section>
             <section className="panel">
               <h2>Предпросмотр</h2>
-              <p className="muted">Изменения сохраняются в data/settings.json. На продакшене потребуется GitHub-commit через Vercel.</p>
+              <p className="muted">Настройки сохраняются и применяются после пересборки сайта.</p>
             </section>
           </div>
         )}
