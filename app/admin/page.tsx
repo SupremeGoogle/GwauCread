@@ -52,8 +52,9 @@ export default function AdminPage() {
   const [draft, setDraft] = useState<Product>(emptyProduct);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [status, setStatus] = useState("");
   const [leadStatus, setLeadStatus] = useState("");
+  const [sheetUrl, setSheetUrl] = useState("");
+  const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
 
   const [settings, setSettings] = useState<SettingsType>(defaultSettings);
@@ -98,8 +99,10 @@ export default function AdminPage() {
     if (response.ok) {
       setLeads(data.leads || []);
       setLeadStatus(data.warning || "");
+      setSheetUrl(data.sheetUrl || "");
     } else {
       setLeadStatus(data.error || "Не удалось загрузить заявки");
+      setSheetUrl(data.sheetUrl || "");
     }
   }
 
@@ -329,15 +332,6 @@ export default function AdminPage() {
               {leads.length === 0 ? (
                 <div>
                   <p className="muted">Заявок пока нет.</p>
-                  <a
-                    href={process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL || "https://docs.google.com/spreadsheets"}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="button secondary"
-                    style={{ display: "inline-flex", gap: 8, marginTop: 8, minHeight: 38, fontSize: 13 }}
-                  >
-                    <Table size={15} /> Открыть Google Sheets
-                  </a>
                 </div>
               ) : (
                 <div>
@@ -350,17 +344,17 @@ export default function AdminPage() {
                       <small className="muted">{lead.createdAt}</small>
                     </div>
                   ))}
-                  <a
-                    href={process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL || "https://docs.google.com/spreadsheets"}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="button secondary"
-                    style={{ display: "inline-flex", gap: 8, marginTop: 12, minHeight: 38, fontSize: 13 }}
-                  >
-                    <ExternalLink size={15} /> Открыть Google Sheets
-                  </a>
                 </div>
               )}
+              <a
+                href={sheetUrl || "https://docs.google.com/spreadsheets"}
+                target="_blank"
+                rel="noreferrer"
+                className="button secondary"
+                style={{ display: "inline-flex", gap: 8, marginTop: 12, minHeight: 38, fontSize: 13 }}
+              >
+                <ExternalLink size={15} /> Открыть Google Sheets
+              </a>
             </section>
           </div>
         ) : (

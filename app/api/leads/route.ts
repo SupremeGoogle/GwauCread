@@ -1,26 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { Lead } from "@/lib/types";
+import { saveLocalLead } from "@/lib/leads";
 
 export async function POST(request: NextRequest) {
-  const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
-
-  if (!scriptUrl) {
-    return NextResponse.json({ error: "Google Sheets пока не подключен" }, { status: 503 });
-  }
-
   const lead = (await request.json()) as Lead;
   if (!lead.name || !lead.phone) {
     return NextResponse.json({ error: "Укажите имя и контакт" }, { status: 400 });
   }
 
-  const response = await fetch(scriptUrl, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ action: "create", lead })
-  });
+  await saveLocalLead(lead);
 
-  if (!response.ok) {
-    return NextResponse.json({ error: "Google Sheets не принял заявку" }, { status: 502 });
+  const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
+  if (scriptUrl) {
+    try {
+      await fetch(scriptUrl, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ action: "create", lead }),
+        signal: AbortSignal.timeout(5000),
+      });
+    } catch {
+      // Google Sheets is optional — local save is authoritative
+    }
   }
 
   return NextResponse.json({ ok: true });
