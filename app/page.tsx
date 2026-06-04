@@ -268,7 +268,7 @@ export default function HomePage() {
             <a href="/privacy">Политика конфиденциальности</a>
           </div>
           <div className="footer-bottom">
-            <span>© {new Date().getFullYear()} GwauCread</span>
+            <span>© {new Date().getFullYear()} GwauCread. Все права защищены.</span>
             <motion.span
               animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
