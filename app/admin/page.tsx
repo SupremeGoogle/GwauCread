@@ -21,6 +21,8 @@ const emptyProduct: Product = {
 };
 
 const defaultSettings: SettingsType = {
+  metaTitle: "",
+  metaDescription: "",
   heroEyebrow: "",
   heroTitle: "",
   heroLead: "",
@@ -371,6 +373,14 @@ export default function AdminPage() {
                   persistSettings();
                 }}
               >
+                <label style={{ fontSize: 13, color: "var(--muted)" }}>SEO — заголовок (title)</label>
+                <input className="input" value={settings.metaTitle} onChange={(e) => setSettingField("metaTitle", e.target.value)} placeholder="Заголовок для поисковиков" />
+
+                <label style={{ fontSize: 13, color: "var(--muted)" }}>SEO — описание (description)</label>
+                <textarea className="textarea" value={settings.metaDescription} onChange={(e) => setSettingField("metaDescription", e.target.value)} placeholder="Описание для поисковиков" style={{ minHeight: 60 }} />
+
+                <div style={{ height: 1, background: "var(--line)", margin: "12px 0" }} />
+
                 <label style={{ fontSize: 13, color: "var(--muted)" }}>Hero — верхняя строка</label>
                 <input className="input" value={settings.heroEyebrow} onChange={(e) => setSettingField("heroEyebrow", e.target.value)} placeholder="Верхняя строка" />
 
