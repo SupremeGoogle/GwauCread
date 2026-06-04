@@ -1,5 +1,18 @@
 [
   {
+    "id": "dfgsd",
+    "name": "dfgsd",
+    "category": "Конструктор",
+    "price": "1231",
+    "oldPrice": "12312313",
+    "badge": "123123",
+    "rating": "12312",
+    "reviews": "123123",
+    "image": "/uploads/1780586629266-c3j18kahpdg.jpg",
+    "buyUrl": "",
+    "description": "sdfsdfg"
+  },
+  {
     "id": "trafalgar-snail",
     "name": "Улитка Трафальгар Ло Ван Пис",
     "category": "Конструктор",
