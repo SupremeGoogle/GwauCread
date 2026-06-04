@@ -8,6 +8,7 @@ export type Product = {
   rating?: string;
   reviews?: string;
   image: string;
+  buyUrl?: string;
   description: string;
 };
 

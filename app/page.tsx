@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { ArrowRight, ShieldCheck, ShoppingBag, Sparkles, Star } from "lucide-react";
 import { LeadForm } from "@/components/LeadForm";
 import { getProducts } from "@/lib/products";
 
 export default async function HomePage() {
   const products = await getProducts();
-  const heroProduct = products[0];
 
   return (
     <main className="shell">
@@ -22,12 +21,13 @@ export default async function HomePage() {
         </div>
       </nav>
 
-      <section className="hero">
+      <section className="hero" style={{ backgroundImage: "url('/gwaucread-hero.png')" }}>
+        <div className="hero-shade" />
         <div className="hero-copy">
-          <p className="eyebrow">Конструкторы, DIY и коллекционные модели</p>
+          <p className="eyebrow">Творческие наборы и коллекционные сборки</p>
           <h1>GwauCread</h1>
           <p className="lead">
-            Тематические наборы для тех, кто любит собирать руками, украшать пространство и дарить вещи с характером.
+            Предметы для спокойной сборки, ярких подарков и полок, которые хочется рассматривать.
           </p>
           <div className="hero-actions">
             <a className="button primary" href="#catalog">
@@ -38,12 +38,9 @@ export default async function HomePage() {
             </a>
           </div>
         </div>
-        <div className="hero-stage">
-          <img src={heroProduct.image} width={516} height={688} alt={heroProduct.name} />
-          <div className="floating-note">
-            <strong>{heroProduct.name}</strong>
-            <p className="muted">{heroProduct.description}</p>
-          </div>
+        <div className="hero-panel">
+          <span>6 товаров</span>
+          <strong>Конструкторы, рукоделие, коллекционный вайб</strong>
         </div>
       </section>
 
@@ -74,6 +71,15 @@ export default async function HomePage() {
                   <Star size={16} fill="currentColor" />
                   <span>{product.rating || "Новый товар"}</span>
                   <span>{product.reviews}</span>
+                </div>
+                <div className="product-actions">
+                  <a className="buy-button" href={product.buyUrl || "#contact"} target={product.buyUrl ? "_blank" : undefined} rel="noreferrer">
+                    <ShoppingBag size={18} />
+                    Купить
+                  </a>
+                  <a className="details-link" href="#contact">
+                    Задать вопрос
+                  </a>
                 </div>
               </div>
             </article>

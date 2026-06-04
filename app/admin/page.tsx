@@ -15,6 +15,7 @@ const emptyProduct: Product = {
   rating: "",
   reviews: "",
   image: "",
+  buyUrl: "",
   description: ""
 };
 
@@ -203,6 +204,7 @@ export default function AdminPage() {
               <input className="input" value={draft.reviews || ""} onChange={(e) => setDraft({ ...draft, reviews: e.target.value })} placeholder="Отзывы / доставка" />
               <textarea className="textarea" value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} placeholder="Описание" required />
               <input className="input" value={draft.image} onChange={(e) => setDraft({ ...draft, image: e.target.value })} placeholder="URL картинки" required />
+              <input className="input" value={draft.buyUrl || ""} onChange={(e) => setDraft({ ...draft, buyUrl: e.target.value })} placeholder="Ссылка покупки" />
               <label className="button secondary" style={{ justifyContent: "center" }}>
                 <ImagePlus size={18} /> Загрузить картинку
                 <input hidden type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadImage(e.target.files[0])} />
