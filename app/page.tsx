@@ -43,18 +43,6 @@ export default function HomePage() {
         <div className="nav-links">
           <a href="#catalog">Каталог</a>
           <a href="#contact">Заявка</a>
-          <Link href="/privacy">Политика</Link>
-          <Link href="/admin">Админка</Link>
-          <Link
-            href="/original"
-            style={{
-              border: "1px solid var(--teal)",
-              color: "var(--teal)",
-              fontSize: 12,
-            }}
-          >
-            Оригинал
-          </Link>
         </div>
       </nav>
 
@@ -131,7 +119,6 @@ export default function HomePage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
-          <span>6 товаров</span>
           <strong>Конструкторы, рукоделие, коллекционный вайб</strong>
         </motion.div>
 
@@ -263,13 +250,34 @@ export default function HomePage() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
       >
-        <span>© {new Date().getFullYear()} GwauCread</span>
-        <motion.span
-          animate={{ opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <Sparkles size={16} /> Современный каталог для Vercel
-        </motion.span>
+        <div className="footer-inner">
+          <div className="footer-brand">
+            <motion.span
+              className="brand-mark"
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              style={{ display: "inline-flex", marginRight: 10 }}
+            >
+              GC
+            </motion.span>
+            <span className="footer-logo">GwauCread</span>
+          </div>
+          <div className="footer-links">
+            <a href="#catalog">Каталог</a>
+            <a href="#contact">Заявка</a>
+            <a href="/privacy">Политика конфиденциальности</a>
+          </div>
+          <div className="footer-bottom">
+            <span>© {new Date().getFullYear()} GwauCread</span>
+            <motion.span
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="footer-tagline"
+            >
+              <Sparkles size={14} /> Сделано с душой
+            </motion.span>
+          </div>
+        </div>
       </motion.footer>
     </main>
   );

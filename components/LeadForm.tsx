@@ -43,6 +43,15 @@ export function LeadForm({ products }: { products: Product[] }) {
         ))}
       </select>
       <textarea className="textarea" name="message" placeholder="Комментарий" />
+      <label className="consent">
+        <input type="checkbox" name="consent" required />
+        <span>
+          Согласен(на) на{" "}
+          <a href="/privacy" target="_blank" className="consent-link">
+            обработку персональных данных
+          </a>
+        </span>
+      </label>
       <button className="button primary" type="submit" disabled={pending}>
         <Send size={18} />
         {pending ? "Отправляем" : "Отправить заявку"}
